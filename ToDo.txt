@@ -8,4 +8,4 @@
 8. Add ideas for how this program may be improved
 - c++ implementation
 - batch processing w/ multi threading
-- 
+9. Add timer to your code running so that you can analyze performance improvements
