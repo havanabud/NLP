@@ -1,29 +1,59 @@
-import argparse
+from multiprocessor_utils import MultiProcessorUtils
 from edit_distance import EditDistance
+from parser_utils import ParserUtils
 from graph_utils import GraphUtils
-from file_utils import FileUtils
-from main_utils import MainUtils
 from params import Params
 
+
+#NOTE: for multiprocessing in python, this function must be
+#      picklable and callable from same script (i.e. main.py)
+#      in which __main__ is invoked.
+def calc_edit_distances(files, range_bound, max_lines, output):
+    '''
+    Calculates edit_distance for each file in files and stores
+    in a dictionary.
+    :param files: array of filenames as string
+    :param total_num_lines_array: total number of lines in each file
+    '''
+    from nltk.metrics.distance import edit_distance
+    import linecache
+
+    lower_bound = range_bound[0]
+    upper_bound = range_bound[1]
+    print "lower_bound: ",lower_bound
+    print "upper_bound: ",upper_bound
+
+    print "Calculating edit distances..."
+    edit_distance_counts = {}
+    for filename in files:
+        edit_distance_counts[filename] = {}
+        for x_idx in range(lower_bound, upper_bound):
+            x_line = linecache.getline(filename, x_idx)
+            for y_idx in range(x_idx + 1, max_lines):
+                y_line = linecache.getline(filename, y_idx)
+                e_dist = edit_distance(x_line, y_line)
+                try:
+                    edit_distance_counts[filename][e_dist] += 1
+                except KeyError:
+                    edit_distance_counts[filename][e_dist] = 1
+    output.put(edit_distance_counts)
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Calculates edit distances and four parameters for two languages.")
-    parser.add_argument('-s', '--source', type=str, required=True, help="Path to filename containing source language.")
-    parser.add_argument('-t', '--target', type=str, required=True, help="Path to filename containing target language.")
-    parser.add_argument('-o', '--output', type=str, required=True, help="Path to filename for writing parameters.")
-    parser.add_argument('-g', '--groups', help="Comma separated integers representing the edit distances "
-                                               "you wish to group by when calculating parameters")
+    # Parse args
+    args = ParserUtils.get_args()
+    #TODO: build out inference functionality
+    if args.infer:
+        print "ERROR: inference not built out, yet. Use --param instead."
+        exit()
+    total_num_lines = ParserUtils.get_total_lines(args.source, args.target)
+    groupings = ParserUtils.get_groupings(args.groups)
 
-    # Get args
-    args = parser.parse_args()
-    input_files = [args.source, args.target]
-    groupings = MainUtils.parse_groups(args.groups)
-
-    # Read-in and cache lines of input_files and calculate number of lines in each file
-    total_num_lines_array = []
-    FileUtils.populate_total_num_lines_array(input_files, total_num_lines_array)
-
-    # Calculate edit distances for input_files and return defaultdict of counts for each edit_distance by file
-    edit_distance_counts = EditDistance.calc_edit_distances(input_files, total_num_lines_array)
+    # Calculate edit distances for input_files and return dict of counts for each edit_distance by file
+    if args.batch:
+        edit_distance_counts = MultiProcessorUtils.process_in_batches(calc_edit_distances, [args.source, args.target], total_num_lines)
+    else:
+        edit_distance_counts = EditDistance.calc_edit_distances([args.source, args.target], total_num_lines)
 
     # Calculate parameters using edit_distance_counts and write to output file.
     p = Params()

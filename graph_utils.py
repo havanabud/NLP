@@ -1,14 +1,12 @@
-import plotly
 import plotly.plotly as py
 import plotly.graph_objs as go
-plotly.tools.set_credentials_file(username='Andrew.Hearst75', api_key='d5R5jd7z5BqSCot4ClrL')
-plotly.tools.set_config_file(world_readable=True,sharing='public')
 
 
 class GraphUtils(object):
 
     @classmethod
     def plot_data(cls, file_source, file_target, edit_distance_counts):
+        cls._sign_in()
         print "Collecting data points for graph..."
         x_axis_data_points = [] # edit distances
         y_axis_data_points = [] # counts
@@ -63,3 +61,7 @@ class GraphUtils(object):
         fig = go.Figure(data=data, layout=layout)
 
         print py.plot(fig)
+
+    @staticmethod
+    def _sign_in():
+        py.sign_in('Andrew.Hearst75', 'd5R5jd7z5BqSCot4ClrL')
