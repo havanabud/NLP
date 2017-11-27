@@ -37,17 +37,17 @@ class MultiProcessorUtils(object):
                 batches.add((lower_bound, upper_bound))
         else:
             step_floor = total_num_lines // cpu_count
-            print "step_floor: ", step_floor
-            print "step_floor cpus: ", (cpu_count - remainder)
+            #print "step_floor: ", step_floor
+            #print "step_floor cpus: ", (cpu_count - remainder)
             for lower_bound in range(1, (cpu_count - remainder) * step_floor + 1, step_floor):
                 upper_bound = lower_bound + step_floor - 1
                 batches.add((lower_bound, upper_bound))
 
             floor_max = lower_bound + step_floor
-            print "floor_max: ", floor_max
+            #print "floor_max: ", floor_max
             step_ceiling = int(ceil(total_num_lines / float(cpu_count)))
-            print "step_ceiling: ", step_ceiling
-            print "step_ceiling cpus: ", remainder
+            #print "step_ceiling: ", step_ceiling
+            #print "step_ceiling cpus: ", remainder
             for lower_bound in range(floor_max, total_num_lines, step_ceiling):
                 upper_bound = total_num_lines if lower_bound + step_ceiling == total_num_lines else lower_bound + step_ceiling - 1
                 batches.add((lower_bound, upper_bound))

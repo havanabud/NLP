@@ -10,12 +10,14 @@ class ParserUtils(object):
         param_or_infer = parser.add_mutually_exclusive_group(required=True)
         param_or_infer.add_argument('--param', action='store_true')
         param_or_infer.add_argument('--infer', action='store_true')
-        parser.add_argument('-b', '--batch', help="Calculate edit distance in batches using mutliple processes.")
+        parser.add_argument('-b', '--batch', action='store_true',
+                            help="Calculate edit distance in batches using mutliple processes.")
         parser.add_argument('-s', '--source', type=str, required=True,
                             help="Path to filename containing source language.")
         parser.add_argument('-t', '--target', type=str, required=True,
                             help="Path to filename containing target language.")
-        parser.add_argument('-o', '--output', type=str, required=True, help="Path to filename for writing parameters.")
+        parser.add_argument('-o', '--output', type=str, required=True,
+                            help="Path to filename for writing parameters.")
         parser.add_argument('-g', '--groups', help="Comma separated integers representing the edit distances "
                                                    "you wish to group by when calculating parameters")
         return parser.parse_args()

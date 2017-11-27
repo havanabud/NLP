@@ -3,6 +3,7 @@ from edit_distance import EditDistance
 from parser_utils import ParserUtils
 from graph_utils import GraphUtils
 from params import Params
+import time
 
 
 #NOTE: for multiprocessing in python, this function must be
@@ -20,10 +21,8 @@ def calc_edit_distances(files, range_bound, max_lines, output):
 
     lower_bound = range_bound[0]
     upper_bound = range_bound[1]
-    print "lower_bound: ",lower_bound
-    print "upper_bound: ",upper_bound
-
-    print "Calculating edit distances..."
+    #print "lower_bound: ",lower_bound
+    #print "upper_bound: ",upper_bound
     edit_distance_counts = {}
     for filename in files:
         edit_distance_counts[filename] = {}
@@ -50,10 +49,17 @@ if __name__ == "__main__":
     groupings = ParserUtils.get_groupings(args.groups)
 
     # Calculate edit distances for input_files and return dict of counts for each edit_distance by file
+    wall_start_time = time.time()
+    cpu_start_time = time.clock()
     if args.batch:
+        print "Calculating edit distances using multiple processes..."
         edit_distance_counts = MultiProcessorUtils.process_in_batches(calc_edit_distances, [args.source, args.target], total_num_lines)
     else:
         edit_distance_counts = EditDistance.calc_edit_distances([args.source, args.target], total_num_lines)
+    cpu_end_time = time.clock() - cpu_start_time
+    wall_end_time = time.time() - wall_start_time
+    print "EditDistance Wall Time: ", wall_end_time
+    print "EditDistance CPU Time: ", cpu_end_time
 
     # Calculate parameters using edit_distance_counts and write to output file.
     p = Params()
