@@ -13,7 +13,6 @@ class EditDistance(object):
         :param total_num_lines_array: total number of lines in each file
         :return: type defaultdict { "filename" : { "edit_distance_value" : <count> } }
         '''
-        print "Calculating edit distances..."
         edit_distance_counts = defaultdict(lambda: defaultdict(int))
 
         for filename in files:

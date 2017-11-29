@@ -23,8 +23,10 @@ class Params(object):
         return parameters
 
     @classmethod
-    def write_parameters_by_group(cls, params, file_source, file_target, file_output):
-        header = "Parameters for source: {0} and target: {1} \n\n".format(file_source, file_target)
+    def write_parameters_by_group(cls, params, file_source, file_target, file_output, e_dist_clock_time):
+        header = "Parameters for source: {0} and target: {1}\n" \
+                 "Clock time for all edit distance calculations: {2}\n\n"\
+                 .format(file_source, file_target, e_dist_clock_time)
         try:
             with open(file_output, 'a') as f_output:
                 f_output.write(header)
@@ -32,7 +34,7 @@ class Params(object):
                     print "Writing parameters to file for group {0}: ".format(group)
                     cls._write_parameters(group, group_params, f_output)
         except IOError as e:
-            print "I/O Error({0}): {1}".format(e.errno, e.strerror)
+            print "I/O Error: {0}".format(e)
 
     @classmethod
     def _write_parameters(cls, group, parameters, f_output):
@@ -148,11 +150,21 @@ class Params(object):
 
     @staticmethod
     def _calc_expanding_factor(e_dist_source, e_dist_target):
-        return e_dist_target / float(e_dist_source)
+        try:
+            result = e_dist_target / float(e_dist_source)
+        # an e_dist of zero indicates the source and target sentence were the same string
+        except ZeroDivisionError as e:
+            result = 0
+        return result
 
     @staticmethod
     def _calc_contracting_factor(e_dist_source, e_dist_target):
-        return e_dist_source / float(e_dist_target)
+        try:
+            result = e_dist_source / float(e_dist_target)
+        # an e_dist of zero indicates the source and target sentence were the same string
+        except ZeroDivisionError as e:
+            result = 0
+        return result
 
     @staticmethod
     def _calc_worst_stretching_factor(worst_expanding_factor, worst_contracting_factor):
