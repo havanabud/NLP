@@ -9,4 +9,4 @@ class TimeUtils(object):
 
     @staticmethod
     def get_end_time(start_time_secs):
-        return start_time_secs - clock()
+        return clock() - start_time_secs

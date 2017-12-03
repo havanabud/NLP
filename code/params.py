@@ -9,9 +9,12 @@ class Params(object):
     SUM_EXPAND = "sum_of_expanding_factors"
     SUM_CONTRACT = "sum_of_contracting_factors"
     TOTAL_COUNT = "total_count"
+    ALL = 'ALL'
+    FILE_OUTPUT = "output/parameters.txt"
 
     @classmethod
     def calculate_parameters_by_grouping(cls, file_source, file_target, edit_distance_counts, groupings=[]):
+        print "Calculating parameters..."
         parameters = cls._get_empty_parameters_by_grouping(groupings)
         for e_dist_source, count_source in edit_distance_counts[file_source].iteritems():
             for e_dist_target, count_target in edit_distance_counts[file_target].iteritems():
@@ -21,32 +24,6 @@ class Params(object):
                                                                     count_source * count_target)
         cls._calc_stretching_params_by_group(parameters)
         return parameters
-
-    @classmethod
-    def write_parameters_by_group(cls, params, file_source, file_target, file_output, e_dist_clock_time):
-        header = "Parameters for source: {0} and target: {1}\n" \
-                 "Clock time for all edit distance calculations: {2}\n\n"\
-                 .format(file_source, file_target, e_dist_clock_time)
-        try:
-            with open(file_output, 'a') as f_output:
-                f_output.write(header)
-                for group, group_params in sorted(params.iteritems()):
-                    print "Writing parameters to file for group {0}: ".format(group)
-                    cls._write_parameters(group, group_params, f_output)
-        except IOError as e:
-            print "I/O Error: {0}".format(e)
-
-    @classmethod
-    def _write_parameters(cls, group, parameters, f_output):
-        f_output.write("Group: {0}\n".format(group))
-        for param_name, param_value in sorted(parameters.iteritems()):
-            if (param_name != cls.SUM_EXPAND) and \
-                (param_name != cls.SUM_CONTRACT) and \
-                (param_name != cls.TOTAL_COUNT):
-                    f_output.write(': '.join([param_name, str(param_value)]))
-                    f_output.write('\n')
-        f_output.write('\n')
-
 
     @classmethod
     def _calc_expanding_and_contracting_params_by_group(cls, params, e_dist_source, e_dist_target, count_multiplier):
@@ -72,23 +49,13 @@ class Params(object):
 
     @classmethod
     def _calc_stretching_params_by_group(cls, params):
-        for group_params in params.itervalues():
-                cls._store_stretching_factors(group_params)
-
-    @classmethod
-    def _store_stretching_factors(cls, params):
-        if params[cls.WORST_EXPAND] and params[cls.WORST_CONTRACT]:
-            cls._store_worst_stretching_factor(params)
-            cls._store_average_stretching_factor(params)
-        else:
-            print "Error: Cannot calculate stretching factors due to invalid values! \n " \
-                  "{0}: {1} \n " \
-                  "{2}: {3}. \n " \
-                  "Cannot store {2}!".format(cls.WORST_EXPAND,
-                                             params[cls.WORST_EXPAND],
-                                             cls.WORST_CONTRACT,
-                                             params[cls.WORST_CONTRACT],
-                                             cls.AVG_STRETCH)
+        for group, group_params in params.iteritems():
+            if group_params[cls.WORST_EXPAND] and group_params[cls.WORST_CONTRACT]:
+                cls._store_worst_stretching_factor(group_params)
+                cls._store_average_stretching_factor(group_params)
+            else:
+                print "WARNING: There were no edit distances for group {0}. " \
+                      "Therefore, no parameters could be calculated for this group.".format(group)
 
     @classmethod
     def _store_worst_stretching_factor(cls, params):
@@ -126,11 +93,11 @@ class Params(object):
     @classmethod
     def _get_empty_parameters_by_grouping(cls, groupings):
         parameters = defaultdict(lambda: defaultdict(float))
-        if not groupings:
-            print "INFO: no groupings provided so defaulting to ALL (i.e. 1M)"
-            parameters[1000000] = cls._get_empty_parameters_dict()
-        else:
-            print "INFO: creating groupings: {0}".format(groupings)
+        # Comparing non-numeric type against numeric value will always result
+        # in numeric value being less than non-numeric type
+        # whereby (type<int> < type<str>) e.g. (5 < "ALL")
+        parameters[cls.ALL] = cls._get_empty_parameters_dict()
+        if groupings:
             for group in groupings:
                 parameters[group] = cls._get_empty_parameters_dict()
 
@@ -174,3 +141,30 @@ class Params(object):
     def _calc_avg_stretching_factor(total_count, sum_expanding_factors, sum_contracting_factors):
         return ( (1/float(total_count)) * sum_expanding_factors ) * \
             ( (1/float(total_count)) * sum_contracting_factors )
+
+    @classmethod
+    def write_params(cls, params, file_source, file_target, e_dist_clock_time):
+        print "Writing parameters to {0}".format(cls.FILE_OUTPUT)
+        header = "Parameters\n" \
+                 "source: {0}\n" \
+                 "target: {1}\n\n"\
+                 .format(file_source, file_target)
+        try:
+            with open(cls.FILE_OUTPUT, 'w') as f_output:
+                f_output.write(header)
+                cls._write_parameters_by_group(f_output, params, e_dist_clock_time)
+        except IOError as e:
+            print "I/O Error: {0}".format(e)
+
+    @staticmethod
+    def _write_parameters_by_group(file_output, params, e_dist_clock_time):
+        for group, group_params in sorted(params.iteritems()):
+            file_output.write("Edit Distance Group: {0}\n".format(group))
+            for param_name, param_value in sorted(group_params.iteritems()):
+                if (param_name != Params.SUM_EXPAND) and \
+                    (param_name != Params.SUM_CONTRACT) and \
+                    (param_name != Params.TOTAL_COUNT):
+                        file_output.write(': '.join([param_name, str(param_value)]))
+                        file_output.write('\n')
+            file_output.write('\n')
+        file_output.write("Clock time for all edit distance calculations: {0}\n\n".format(e_dist_clock_time))

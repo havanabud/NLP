@@ -1,6 +1,5 @@
 from collections import defaultdict
 
-
 class Infer(object):
     ZH = "zh"
     RU = "ru"
@@ -14,15 +13,17 @@ class Infer(object):
     WORST_CONTRACT = "worst_contracting_factor"
     WORST_STRETCH = "worst_stretching_factor"
     AVG_STRETCH = "average_stretching_factor"
-    FILE_PARAMS = "NLP/known_lang_parameters.txt"
+    FILE_PARAMS = "code/known_lang_parameters.txt"
+    FILE_OUTPUT = "output/inference.txt"
     EXPECTED_DATA_POINTS = 5
 
     @classmethod
-    def infer(cls, unknown_lang_params, file_output):
+    def infer(cls, unknown_lang_params):
+        print "Calculating inferences..."
         known_langs_params = cls._load_known_lang_params()
         lang_probabilities = cls._infer_by_params(known_langs_params, unknown_lang_params)
         sorted_lang_probabilities = cls._sort_probabilities(lang_probabilities)
-        cls._write_inference(sorted_lang_probabilities, file_output)
+        return sorted_lang_probabilities
 
     @classmethod
     def _infer_by_params(cls, known_langs_params, unknown_lang_params):
@@ -84,10 +85,14 @@ class Infer(object):
         return sorted(data, key=lambda tup: tup[1], reverse=True)
 
     @classmethod
-    def _write_inference(cls, sorted_lang_probabilities, file_output):
-        header = "Inference probabilities by language:\n"
+    def write_infer(cls, sorted_lang_probabilities, file_source, file_target):
+        print "Writing inferences to {0}".format(cls.FILE_OUTPUT)
+        header = "Inferences\n" \
+                 "source: {0}\n" \
+                 "target: {1}\n\n"\
+                 .format(file_source, file_target)
         try:
-            with open(file_output, 'w') as f_output:
+            with open(cls.FILE_OUTPUT, 'w') as f_output:
                 f_output.write(header)
                 for data in sorted_lang_probabilities:
                     f_output.write("{0}: {1}\n".format(data[0], data[1]))

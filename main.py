@@ -1,14 +1,14 @@
-from multiprocessor_utils import MultiProcessorUtils
-from edit_distance import EditDistance
-from parser_utils import ParserUtils
-from graph_utils import GraphUtils
-from time_utils import TimeUtils
-from params import Params
-from infer import Infer
+from code.multiprocessor_utils import MultiProcessorUtils
+from code.edit_distance import EditDistance
+from code.parser_utils import ParserUtils
+from code.graph_utils import GraphUtils
+from code.time_utils import TimeUtils
+from code.params import Params
+from code.infer import Infer
 
 
 #NOTE: for multiprocessing in python, this function must be
-#      picklable and callable from same script (i.e. main.py)
+#      picklable and callable from same script
 #      in which __main__ is invoked.
 def calc_edit_distances(files, batch, max_lines, output):
     from nltk.metrics.distance import edit_distance
@@ -40,23 +40,23 @@ if __name__ == "__main__":
 
     # Calculate edit distances for input_files and return dict of counts for each edit_distance by file
     cpu_start_time = TimeUtils.get_start_time()
+    print "Calculating edit distances..."
     if args.batch and MultiProcessorUtils.has_multiple_cpus():
         edit_distance_counts = MultiProcessorUtils.process_in_batches(calc_edit_distances, [args.source, args.target], total_num_lines+1)
     else:
         edit_distance_counts = EditDistance.calc_edit_distances([args.source, args.target], total_num_lines+1)
     cpu_end_time = TimeUtils.get_end_time(cpu_start_time)
 
-    # Calculate parameters using edit_distance_counts and write to output file.
+    # Calculate parameters using edit_distance_counts
     p = Params()
     params = p.calculate_parameters_by_grouping(args.source, args.target, edit_distance_counts, groupings=groupings)
+    p.write_params(params, args.source, args.target, cpu_end_time)
 
-    #TODO: client shuoldn't be allowed to group if we're inferring
-    #TODO: we should make this ALL grouping known easily across code base
+    # Calculate Inference if specified, and write results to file.
     if args.infer:
-        Infer.infer(params[1000000],args.output)
-    else:
-        p.write_parameters_by_group(params, args.source, args.target, args.output, cpu_end_time)
+        inferences = Infer.infer(params[p.ALL])
+        Infer.write_infer(inferences, args.source, args.target)
 
-    #TODO: create function to graph the PARAMS, not just the edit_distances
-    #TODO: graph the different edit distances by groupings (if groupings were provided)
-    #GraphUtils.plot_data(args.source, args.target, edit_distance_counts)
+    # Plot ALL edit distances in graph
+    if args.plot:
+        GraphUtils.plot_data(args.source, args.target, edit_distance_counts)
