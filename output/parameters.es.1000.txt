@@ -1,0 +1,12 @@
+Parameters
+source: input/1000.es-en.es.txt
+target: input/1000.es-en.en.txt
+
+Edit Distance Group: ALL
+average_stretching_factor: 1.49372910561
+worst_contracting_factor: 767.0
+worst_expanding_factor: 904.0
+worst_stretching_factor: 693368.0
+
+Clock time for all edit distance calculations: 4739.26623401
+
