@@ -19,7 +19,7 @@ class MultiProcessorUtils(object):
             processes.append(mp.Process(target=calc_edit_distances,
                                         args=(input_files, batch, total_num_lines, output)))
         for idx, proc in enumerate(processes):
-            print "Fork and start a new batch process #",idx,"...."
+            print "INFO: Fork and start a new batch process #",idx,"...."
             proc.start()
 
         results = [output.get() for proc in processes]
