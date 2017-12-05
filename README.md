@@ -5,10 +5,10 @@ The purpose of this program is twofold:
 
 # Usage
 To calculate the parameters for a known, translated language pair:  
-`python main.py --param [--batch] --source <language_corpus.txt> --target <language_corpus.txt> [--groups <int, int, int>] [--plot]`
+`python main.py --param [--batch] --source <language_corpus.txt> --target <language_corpus.txt> [--groups <int,int,int>] [--plot]`
 
 To infer the language pair for an unknown, translated language pair:  
-`python main.py --infer [--batch] --source <language_corpus.txt> -- target <language_corpus.txt> [--groups <int, int, int>] [--plot]`
+`python main.py --infer [--batch] --source <language_corpus.txt> -- target <language_corpus.txt> [--groups <int,int,int>] [--plot]`
 
 # Arguments
 --source: The source language corpus file. The number of lines in this file must match the target language file.  
@@ -21,7 +21,7 @@ To infer the language pair for an unknown, translated language pair:
 
 --infer: Calculates the edit distances for an unkown, translated language pair specified by `--source` and `--target`. The edit distances are used to calculate four parameters, which are compared against the parameters for a known set of translated languages. The inferred probability for each language is written to a file specified by `--output`.  
 
---groups: Comma separated integers by which the edit distances will be grouped and counted. For example, if you specify the numbers `5, 10, 15, 25, 100`, then all edit distances of five or less will be counted in group `5`, all edit distances of 10 or less will be counted in group `10`, and so on. 
+--groups: Comma separated integers by which the edit distances will be grouped and counted. For example, if you specify the numbers `5,10,15,25,100`, then all edit distances of five or less will be counted in group `5`, all edit distances of 10 or less will be counted in group `10`, and so on. NOTE: no spaces between the comma separated integers!
 
 --plot: Plots the edit distances calculated for the source and target languages. A link to the charts on plot.ly should be automatically generated. Please ignore the `UserWarnings` posted by the plot.ly API.  
 
