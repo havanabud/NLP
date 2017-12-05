@@ -1,0 +1,10 @@
+Inferences
+source: input/infer.500.ru-en.ru.txt
+target: input/infer.500.ru-en.en.txt
+
+zh: 0.991027765746
+de: 0.991007823795
+fr: 0.847606969628
+cs: 0.79141722533
+es: 0.776527763583
+ru: 0.602412451919

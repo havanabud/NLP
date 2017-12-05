@@ -13,7 +13,7 @@ class Infer(object):
     WORST_CONTRACT = "worst_contracting_factor"
     WORST_STRETCH = "worst_stretching_factor"
     AVG_STRETCH = "average_stretching_factor"
-    FILE_PARAMS = "code/known_lang_parameters.txt"
+    FILE_PARAMS = "code/known_lang_parameters_1000.txt"
     FILE_OUTPUT = "output/inference.txt"
     EXPECTED_DATA_POINTS = 5
 
