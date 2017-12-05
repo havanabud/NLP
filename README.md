@@ -8,7 +8,7 @@ To calculate the parameters for a known, translated language pair:
 `python main.py --param [--batch] --source <language_corpus.txt> --target <language_corpus.txt> [--groups <int,int,int>] [--plot]`
 
 To infer the language pair for an unknown, translated language pair:  
-`python main.py --infer [--batch] --source <language_corpus.txt> -- target <language_corpus.txt> [--groups <int,int,int>] [--plot]`
+`python main.py --infer [--batch] --source <language_corpus.txt> --target <language_corpus.txt> [--groups <int,int,int>] [--plot]`
 
 # Arguments
 --source: The source language corpus file. The number of lines in this file must match the target language file.  
