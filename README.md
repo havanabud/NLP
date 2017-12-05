@@ -5,17 +5,15 @@ The purpose of this program is twofold:
 
 # Usage
 To calculate the parameters for a known, translated language pair:  
-`python main.py --param [--batch] --source <language_corpus.txt> --target <language_corpus.txt> --output <output_parameters.txt> [--groups <int, int, int>] [--plot]`
+`python main.py --param [--batch] --source <language_corpus.txt> --target <language_corpus.txt> [--groups <int, int, int>] [--plot]`
 
 To infer the language pair for an unknown, translated language pair:  
-`python main.py --infer [--batch] --source <language_corpus.txt> -- target <language_corpus.txt> --output <output_inference.txt>`
+`python main.py --infer [--batch] --source <language_corpus.txt> -- target <language_corpus.txt> [--groups <int, int, int>] [--plot]`
 
 # Arguments
 --source: The source language corpus file. The number of lines in this file must match the target language file.  
 
 --target: The target language corpus file. The number of lines in this file must match the source language file.  
-
---output: The file to which the result of either `--param` or `--infer` will be written.  
 
 --batch: Starts `n` proceses, where `n` is the number of the computer's available CPUs on which this program is run, to speed up the time it takes to calculate the edit distances for a language pair. It may be used for either `--param` or `--infer`.  
 
