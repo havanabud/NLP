@@ -17,9 +17,9 @@ To infer the language pair for an unknown, translated language pair:
 
 --batch: Starts `n` proceses, where `n` is the number of the computer's available CPUs on which this program is run, to speed up the time it takes to calculate the edit distances for a language pair. It may be used for either `--param` or `--infer`.  
 
---param: Calculates the edit distances for a known, translated language pair specified by `--source` and `--target`. The edit distances are used to calaculate four parameters, explained in more detail in the README's section `Parameters`. The parameters are then written to a file specified by `--output`.  
+--param: Calculates the edit distances for a known, translated language pair specified by `--source` and `--target`. The edit distances are used to calaculate four parameters, explained in more detail in the README's section `Parameters`. The parameters are then written to a file `parameters.txt`.  
 
---infer: Calculates the edit distances for an unkown, translated language pair specified by `--source` and `--target`. The edit distances are used to calculate four parameters, which are compared against the parameters for a known set of translated languages. The inferred probability for each language is written to a file specified by `--output`.  
+--infer: Calculates the edit distances for an unkown, translated language pair specified by `--source` and `--target`. The edit distances are used to calculate four parameters, which are compared against the parameters for a known set of translated languages. The inferred probability for each language is written to a file `inferences.txt`.  
 
 --groups: Comma separated integers by which the edit distances will be grouped and counted. For example, if you specify the numbers `5,10,15,25,100`, then all edit distances of five or less will be counted in group `5`, all edit distances of 10 or less will be counted in group `10`, and so on. NOTE: no spaces between the comma separated integers!
 
